@@ -50,8 +50,11 @@ async def check_ranks():
 	server = bot.get_server(server_id)
 	while not bot.is_closed:
 		channel = bot.get_channel(channel_id)
-		with open(fileName,'r') as f:
-			players = json.load(f)
+		if os.path.exists(fileName):
+			with open(fileName,'r') as f:
+				players = json.load(f)
+		else:
+			players = []
 		for player in players:
 			try:
 				new_ranks = get_ranks_by_nikname(
