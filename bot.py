@@ -11,7 +11,7 @@ bot = commands.Bot(command_prefix='!')
 token = os.environ.get('TOKEN')
 server_id = os.environ.get('SERVER_ID')
 fileName = 'members.json'
-channel = bot.get_channel(os.environ.get('CHANNEL_ID'))
+channel_id = os.environ.get('CHANNEL_ID')
 """
 #develop settiogs
 token = os.environ.get('TOKEN')
