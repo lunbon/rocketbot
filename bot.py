@@ -6,7 +6,7 @@ from discord.ext import commands
 from functions import get_ranks_by_nikname, save_member_ranks
 from discord_functions import add_roles, delete_roles
 bot = commands.Bot(command_prefix='!')
-"""
+#"""
 #production setting
 token = os.environ.get('TOKEN')
 server_id = os.environ.get('SERVER_ID')
