@@ -6,7 +6,7 @@ from discord.ext import commands
 from functions import get_ranks_by_nikname, save_member_ranks
 from discord_functions import add_roles, delete_roles
 bot = commands.Bot(command_prefix='!')
-#"""
+"""
 #production setting
 token = os.environ.get('TOKEN')
 server_id = os.environ.get('SERVER_ID')
@@ -31,19 +31,29 @@ async def on_ready():
 @bot.command(pass_context=True)
 async def reg(ctx,platform:str, nick:str):
 	ranks = get_ranks_by_nikname(platform, nick)
+	if ranks==False:
+		await bot.say('404 Error! Check nick and platform!')
+		return
 	server = ctx.message.server
-	if server == None:
-		bot.say('Бот работает только на сервере!')
-	server_roles = server.roles
+	try:
+		server_roles = server.roles
+	except:
+		await bot.say('This is a server only bot!')
+		return
 	member = ctx.message.author
+	with open(fileName,'r') as f:
+		players = json.load(f)
+	name=member.name+'#'+member.discriminator
+	if name in players:
+		await delete_roles(bot, players[name]['ranks'], member, server.roles)
 	result_of_saving=save_member_ranks(member.name
 						+'#'+member.discriminator, 
 						platform, nick, ranks, fileName)
 	if result_of_saving:
 		if await add_roles(bot, ranks,member,server_roles):
-			await bot.say('Successfully registered!')
+				await bot.say('Successfully registered!')
 	else:
-		await bot.say('Ошибка при сохранении!')
+		await bot.say('Saving Error')
 
 async def check_ranks():
 	await bot.wait_until_ready()
@@ -56,12 +66,9 @@ async def check_ranks():
 		else:
 			players = []
 		for player in players:
-			try:
-				new_ranks = get_ranks_by_nikname(
-					players[player]['platform'],players[player]['nick'])
-			except:
-				message = 'Запрос профиля %s не удался'%players[player]['nick']
-				await bot.send_message(channel, message)
+			new_ranks = get_ranks_by_nikname(
+				players[player]['platform'],players[player]['nick'])
+			if new_ranks==False:
 				continue
 			if list(new_ranks) != players[player]['ranks']:
 				member = server.get_member_named(player)
