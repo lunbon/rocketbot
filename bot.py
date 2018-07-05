@@ -11,13 +11,17 @@ bot = commands.Bot(command_prefix='!')
 token = os.environ.get('TOKEN')
 server_id = os.environ.get('SERVER_ID')
 fileName = 'members.json'
-channel_id = os.environ.get('CHANNEL_ID')
+update_channel_id = os.environ.get('CHANNEL_ID')
+newcomers_channel_id = os.environ.get('NEWCOMERS_CHANNEL')
+newcomers_role = os.environ.get('NEWCOMERS_ROLE')
 """
 #develop settiogs
 token = os.environ.get('TOKEN')
 server_id = '417269196850987027'
 fileName = 'members.json'
-channel_id = '417269196850987029'
+update_channel_id = '417269196850987029'
+newcomers_channel_id = '417269196850987029'
+newcomers_role = '464414207484493834'
 #"""
 
 
@@ -27,6 +31,21 @@ async def on_ready():
 	print(bot.user.name)
 	print(bot.user.id)
 	print('-'*18)
+
+@bot.event
+async def on_member_join(member):
+	server = bot.get_server(server_id)
+	role = discord.utils.get(server.roles, id=newcomers_role)
+	await bot.add_roles(member, role)
+	channel=bot.get_channel(newcomers_channel_id)
+	message='''
+Добро пожаловать на сервер RL Ranked! Для доступа ко всем каналам необходимо зарегистрироваться. После регистрации бот выдаст вам роли со званиями на сервере, для более простого поиска напарников! Для регистрации вы должны ввести специальную команду на данном канале, используя свой steam id/ps4 nick/xbox nick. Команда выглядит следующим образом: 
+!reg steam <steam id> (Для PC игроков)
+!reg ps <nick> (Для PS4 игроков) 
+!reg xbox <nick> (Для XBOX игроков)
+Если возникли проблемы с регистрацией, пожалуйста, обратитесь к администраторам!
+	'''
+	await bot.send_message(channel, message)
 
 @bot.command(pass_context=True)
 async def reg(ctx,platform:str, nick:str):
@@ -52,6 +71,8 @@ async def reg(ctx,platform:str, nick:str):
 	if result_of_saving:
 		if await add_roles(bot, ranks,member,server_roles):
 				await bot.say('Successfully registered!')
+				new_comer_role = discord.utils.get(server.roles, id=newcomers_role)
+				await bot.remove_roles(member, new_comer_role)
 	else:
 		await bot.say('Saving Error')
 
@@ -59,7 +80,7 @@ async def check_ranks():
 	await bot.wait_until_ready()
 	server = bot.get_server(server_id)
 	while not bot.is_closed:
-		channel = bot.get_channel(channel_id)
+		channel = bot.get_channel(update_channel_id)
 		if os.path.exists(fileName):
 			with open(fileName,'r') as f:
 				players = json.load(f)
