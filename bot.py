@@ -48,8 +48,11 @@ async def on_member_join(member):
 	'''%member.mention
 	await bot.send_message(channel, message)
 
+
+
 @bot.command(pass_context=True)
 async def reg(ctx,platform:str, nick:str):
+	log = bot.get_channel(log_chan)
 	ranks = get_ranks_by_nikname(platform, nick)
 	if ranks==False:
 		await bot.say('404 Error! Check nick and platform!')
@@ -65,46 +68,53 @@ async def reg(ctx,platform:str, nick:str):
 		players = json.load(f)
 	name=member.name+'#'+member.discriminator
 	if name in players:
-		await delete_roles(bot, players[name]['ranks'], member, server.roles)
+		await delete_roles(bot, players[name]['ranks'], member, server.roles,log)
 	result_of_saving=save_member_ranks(member.name
 						+'#'+member.discriminator, 
 						platform, nick, ranks, fileName)
 	if result_of_saving:
-		if await add_roles(bot, ranks,member,server_roles):
+		if await add_roles(bot, ranks,member,server_roles,log):
 				await bot.say('Successfully registered!')
 				new_comer_role = discord.utils.get(server.roles, id=newcomers_role)
 				await bot.remove_roles(member, new_comer_role)
 	else:
 		await bot.say('Saving Error')
 
+
+
+
 async def check_ranks():
 	await bot.wait_until_ready()
-	server = bot.get_server(server_id)
 	while not bot.is_closed:
+		
+		server = bot.get_server(server_id)
 		channel = bot.get_channel(update_channel_id)
-		if os.path.exists(fileName):
-			with open(fileName,'r') as f:
-				players = json.load(f)
-		else:
-			players = []
+		log = bot.get_channel(log_chan)
+		players = json.load(f)
+
 		for player in players:
-			new_ranks = get_ranks_by_nikname(
-				players[player]['platform'],players[player]['nick'])
+			new_ranks = get_ranks_by_nikname(players[player]['platform'],players[player]['nick'])
+
 			if new_ranks==False:
-				continue
+				await bot.send_message(log,'Ошибка при обновлении %s'%(players[player]['nick']))
 			if list(new_ranks) != players[player]['ranks']:
+				message = 'Найдена разница рангов старые ранги - %s и %s. Новые ранги - %s и %s'%(players[player]['ranks'][0],
+																								players[player]['ranks'][1],
+																								new_ranks[0],
+																								new_ranks[1])
+				await bot.send_message(log, member)
+				
 				member = server.get_member_named(player)
-				if await delete_roles(bot, players[player]['ranks'], member, server.roles):
+				if await delete_roles(bot, players[player]['ranks'], member, server.roles, log):
 					save_member_ranks(member.name+'#'+member.discriminator,
 						players[player]['platform'], players[player]['nick'], 
 						new_ranks, fileName)
-					await add_roles(bot, new_ranks, member, server.roles)
+					await add_roles(bot, new_ranks, member, server.roles, log)
 					message = '%s, your ranks have been updated. Your current ranks is %s and %s!'
 					await bot.send_message(channel, message%(member.mention, *new_ranks))
 				else:
-					chan = bot.get_channel(log_chan)
 					message = 'Что-то пошло не так во время обновления - %s' % member.name
-					await bot.send_message(chan, message%(member.name))
+					await bot.send_message(log, message%(member.name))
 			await asyncio.sleep(1)
 		await asyncio.sleep(1)
 		
