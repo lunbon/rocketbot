@@ -103,8 +103,8 @@ async def check_ranks():
 				else:
 					message = 'Что-то пошло не так во время обновления - %s' % member.name
 					await bot.send_message(channel, message%(member.name))
-				await asyncio.sleep(1)
-		await asyncio.sleep(20)
+			await asyncio.sleep(1)
+		await asyncio.sleep(1)
 		
 bot.loop.create_task(check_ranks())
 bot.run(token)
