@@ -90,7 +90,8 @@ async def check_ranks():
 		server = bot.get_server(server_id)
 		channel = bot.get_channel(update_channel_id)
 		log = bot.get_channel(log_chan)
-		players = json.load(f)
+		with open(fileName, 'r') as f:
+			players = json.load(f)
 
 		for player in players:
 			new_ranks = get_ranks_by_nikname(players[player]['platform'],players[player]['nick'])
@@ -98,11 +99,11 @@ async def check_ranks():
 			if new_ranks==False:
 				await bot.send_message(log,'Ошибка при обновлении %s'%(players[player]['nick']))
 			if list(new_ranks) != players[player]['ranks']:
-				message = 'Найдена разница рангов старые ранги - %s и %s. Новые ранги - %s и %s'%(players[player]['ranks'][0],
+				message = '%s Найдена разница рангов старые ранги - %s и %s. Новые ранги - %s и %s'%(player,players[player]['ranks'][0],
 																								players[player]['ranks'][1],
 																								new_ranks[0],
 																								new_ranks[1])
-				await bot.send_message(log, member)
+				await bot.send_message(log, message)
 				
 				member = server.get_member_named(player)
 				if await delete_roles(bot, players[player]['ranks'], member, server.roles, log):
