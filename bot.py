@@ -98,14 +98,19 @@ async def check_ranks():
 
 			if new_ranks==False:
 				await bot.send_message(log,'Ошибка при обновлении %s'%(players[player]['nick']))
+				continue
 			if list(new_ranks) != players[player]['ranks']:
 				message = '%s Найдена разница рангов старые ранги - %s и %s. Новые ранги - %s и %s'%(player,players[player]['ranks'][0],
 																								players[player]['ranks'][1],
 																								new_ranks[0],
 																								new_ranks[1])
 				await bot.send_message(log, message)
-				
-				member = server.get_member_named(player)
+				try:
+					member = server.get_member_named(player)
+					member.name
+				except:
+					bot.send_message(log,'Ошибка с участником %s! Возможно он покинул сервер!'%player)
+					continue
 				if await delete_roles(bot, players[player]['ranks'], member, server.roles, log):
 					save_member_ranks(member.name+'#'+member.discriminator,
 						players[player]['platform'], players[player]['nick'], 
