@@ -14,6 +14,7 @@ fileName = 'members.json'
 update_channel_id = os.environ.get('CHANNEL_ID')
 newcomers_channel_id = os.environ.get('NEWCOMERS_CHANNEL')
 newcomers_role = os.environ.get('NEWCOMERS_ROLE')
+log_chan = os.environ.get('LOG')
 """
 #develop settiogs
 token = os.environ.get('TOKEN')
@@ -39,12 +40,12 @@ async def on_member_join(member):
 	await bot.add_roles(member, role)
 	channel=bot.get_channel(newcomers_channel_id)
 	message='''
-Добро пожаловать на сервер RL Ranked! Для доступа ко всем каналам необходимо зарегистрироваться. После регистрации бот выдаст вам роли со званиями на сервере, для более простого поиска напарников! Для регистрации вы должны ввести специальную команду на данном канале, используя свой steam id/ps4 nick/xbox nick. Команда выглядит следующим образом: 
+%s добро пожаловать на сервер RL Ranked! Для доступа ко всем каналам необходимо зарегистрироваться. После регистрации бот выдаст вам роли со званиями на сервере, для более простого поиска напарников! Для регистрации вы должны ввести специальную команду на данном канале, используя свой steam id/ps4 nick/xbox nick. Команда выглядит следующим образом: 
 !reg steam <steam id> (Для PC игроков)
 !reg ps <nick> (Для PS4 игроков) 
 !reg xbox <nick> (Для XBOX игроков)
 Если возникли проблемы с регистрацией, пожалуйста, обратитесь к администраторам!
-	'''
+	'''%member.mention
 	await bot.send_message(channel, message)
 
 @bot.command(pass_context=True)
@@ -99,12 +100,14 @@ async def check_ranks():
 						new_ranks, fileName)
 					await add_roles(bot, new_ranks, member, server.roles)
 					message = '%s, your ranks have been updated. Your current ranks is %s and %s!'
-					await bot.send_message(channel, message%(member.name, *new_ranks))
+					await bot.send_message(channel, message%(member.mention, *new_ranks))
 				else:
+					chan = bot.get_channel(log_chan)
 					message = 'Что-то пошло не так во время обновления - %s' % member.name
-					await bot.send_message(channel, message%(member.name))
+					await bot.send_message(chan, message%(member.name))
 			await asyncio.sleep(1)
-		await asyncio.sleep(1)
+		await asyncio.sleep(72)
 		
 bot.loop.create_task(check_ranks())
+
 bot.run(token)

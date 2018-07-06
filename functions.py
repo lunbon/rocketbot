@@ -11,8 +11,11 @@ def get_ranks_by_nikname(platform, nikname):
 		tables = soup.find_all('table')
 		playTable = tables[1]
 		trs = playTable.find_all('tr')
-		r2v2 = trs[2].small
-		r3v3 = trs[4].small
+		for tr in trs[1:]:
+			if 'Ranked Doubles 2v2' in str(tr.find_all('td')[1]):
+				r2v2 = tr.small
+			if 'Ranked Solo Standard 3v3' in str(tr.find_all('td')[1]):
+				r3v3 = tr.small
 		first_role = str(r2v2).split('\n')[1] + ' (2vs2)'
 		second_role = str(r3v3).split('\n')[1] + ' (3vs3)'
 		return (first_role, second_role)
