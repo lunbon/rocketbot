@@ -13,8 +13,8 @@ def get_ranks_by_nikname(platform, nikname):
 		trs = playTable.find_all('tr')
 		r2v2 = trs[2].small
 		r3v3 = trs[4].small
-		first_role = str(r2v2).split('\n')[1] + ' (2v2)'
-		second_role = str(r3v3).split('\n')[1] + ' (3v3)'
+		first_role = str(r2v2).split('\n')[1] + ' (2vs2)'
+		second_role = str(r3v3).split('\n')[1] + ' (3vs3)'
 		return (first_role, second_role)
 	except:
 		return False
