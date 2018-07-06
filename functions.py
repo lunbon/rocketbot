@@ -14,10 +14,10 @@ def get_ranks_by_nikname(platform, nikname):
 		for tr in trs[1:]:
 			if 'Ranked Doubles 2v2' in str(tr.find_all('td')[1]):
 				r2v2 = tr.small
-			if 'Ranked Solo Standard 3v3' in str(tr.find_all('td')[1]):
+			if 'Ranked Standard 3v3' in str(tr.find_all('td')[1]):
 				r3v3 = tr.small
-		first_role = str(r2v2).split('\n')[1] + ' (2vs2)'
-		second_role = str(r3v3).split('\n')[1] + ' (3vs3)'
+		first_role = (str(r2v2).split('\n')[1] + ' (2vs2)').strip()
+		second_role = (str(r3v3).split('\n')[1] + ' (3vs3)').strip()
 		return (first_role, second_role)
 	except:
 		return False
