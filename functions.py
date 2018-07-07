@@ -8,8 +8,11 @@ def get_ranks_by_nikname(platform, nikname):
 		response = requests.get(url%(platform,nikname))
 		html = response.text
 		soup = bs4(html, 'html.parser')
-		tables = soup.find_all('table')
-		playTable = tables[1]
+		for tab in soup.find_all('table'):
+			if 'Ranked Doubles 2v2' in str(tab):
+				table=tab
+				break
+		playTable = table
 		trs = playTable.find_all('tr')
 		for tr in trs[1:]:
 			if 'Ranked Doubles 2v2' in str(tr.find_all('td')[1]):
