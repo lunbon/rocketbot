@@ -109,7 +109,7 @@ async def check_ranks():
 					member = server.get_member_named(player)
 					member.name
 				except:
-					bot.send_message(log,'Ошибка с участником %s! Возможно он покинул сервер!'%player)
+					#await bot.send_message(log,'Ошибка с участником %s! Возможно он покинул сервер!'%player)
 					continue
 				if await delete_roles(bot, players[player]['ranks'], member, server.roles, log):
 					save_member_ranks(member.name+'#'+member.discriminator,
@@ -122,7 +122,7 @@ async def check_ranks():
 					message = 'Что-то пошло не так во время обновления - %s' % member.name
 					await bot.send_message(log, message%(member.name))
 			await asyncio.sleep(1)
-		await asyncio.sleep(1)
+		await asyncio.sleep(3600)
 		
 bot.loop.create_task(check_ranks())
 
