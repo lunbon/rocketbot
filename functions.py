@@ -4,12 +4,14 @@ import json
 url = 'https://rocketleague.tracker.network/profile/%s/%s'
 
 def get_ranks_by_nikname(platform, nikname):
+	first_role = 'Unranked (2vs2)'
+	second_role = 'Unranked (3vs3)'
 	try:
 		response = requests.get(url%(platform,nikname))
 		html = response.text
 		soup = bs4(html, 'html.parser')
 		for tab in soup.find_all('table'):
-			if 'Ranked Doubles 2v2' in str(tab):
+			if 'Playlist' in str(tab):
 				table=tab
 				break
 		playTable = table
@@ -17,10 +19,11 @@ def get_ranks_by_nikname(platform, nikname):
 		for tr in trs[1:]:
 			if 'Ranked Doubles 2v2' in str(tr.find_all('td')[1]):
 				r2v2 = tr.small
+				first_role = (str(r2v2).split('\n')[1] + ' (2vs2)').strip()
 			if 'Ranked Standard 3v3' in str(tr.find_all('td')[1]):
 				r3v3 = tr.small
-		first_role = (str(r2v2).split('\n')[1] + ' (2vs2)').strip()
-		second_role = (str(r3v3).split('\n')[1] + ' (3vs3)').strip()
+				second_role = (str(r3v3).split('\n')[1] + ' (3vs3)').strip()
+		
 		return (first_role, second_role)
 	except:
 		return False
