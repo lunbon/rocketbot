@@ -1,20 +1,23 @@
-import os
+import os, sys
 import asyncio
 import json
 import discord
 from discord.ext import commands
 from functions import get_ranks_by_nikname, save_member_ranks
 from discord_functions import add_roles, delete_roles
+import config
+import logging
+
 bot = commands.Bot(command_prefix='!')
 #"""
 #production setting
-token = os.environ.get('TOKEN')
-server_id = os.environ.get('SERVER_ID')
+token = config.token
+server_id = config.server_id
 fileName = 'members.json'
-update_channel_id = os.environ.get('CHANNEL_ID')
-newcomers_channel_id = os.environ.get('NEWCOMERS_CHANNEL')
-newcomers_role = os.environ.get('NEWCOMERS_ROLE')
-log_chan = os.environ.get('LOG')
+update_channel_id = config.channel_id
+newcomers_channel_id = config.newcomers_channel
+newcomers_role = config.newcomers_role
+log_chan = config.log
 """
 #develop settiogs
 token = os.environ.get('TOKEN')
@@ -29,10 +32,10 @@ log_chan = '417269196850987029'
 
 @bot.event
 async def on_ready():
-	print('Logged in as')
-	print(bot.user.name)
-	print(bot.user.id)
-	print('-'*18)
+	logging.info('Logged in as')
+	logging.info(bot.user.name)
+	logging.info(bot.user.id)
+	logging.info('-'*18)
 
 @bot.event
 async def on_member_join(member):
@@ -46,7 +49,7 @@ async def on_member_join(member):
 !reg ps <nick> (Для PS4 игроков) 
 !reg xbox <nick> (Для XBOX игроков)
 Если возникли проблемы с регистрацией, пожалуйста, обратитесь к администраторам!
-	'''%member.mention
+	'''%member.name
 	await bot.send_message(channel, message)
 
 
@@ -80,7 +83,7 @@ async def reg(ctx,platform:str, nick:str):
 				await bot.remove_roles(member, new_comer_role)
 	else:
 		await bot.say('Saving Error')
-
+	
 
 
 
@@ -126,8 +129,8 @@ async def check_ranks():
 					message = 'Что-то пошло не так во время обновления - %s' % member.name
 					await bot.send_message(log, message%(member.name))
 			await asyncio.sleep(1)
-		await asyncio.sleep(900)
-		
-bot.loop.create_task(check_ranks())
+		await asyncio.sleep(3600)
 
-bot.run(token)
+def run_bot():		
+	bot.loop.create_task(check_ranks())
+	bot.run(token)
