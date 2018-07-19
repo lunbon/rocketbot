@@ -2,3 +2,4 @@ __pycache__
 members.json
 config.py
 log.txt
+.DS_Store

@@ -9,6 +9,7 @@ import config
 import logging
 
 bot = commands.Bot(command_prefix='!')
+logging.basicConfig(filename='log.txt', level=logging.INFO)
 #"""
 #production setting
 token = config.token
@@ -131,6 +132,6 @@ async def check_ranks():
 			await asyncio.sleep(1)
 		await asyncio.sleep(3600)
 
-def run_bot():		
-	bot.loop.create_task(check_ranks())
-	bot.run(token)
+	
+bot.loop.create_task(check_ranks())
+bot.run(token)

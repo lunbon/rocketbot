@@ -1,9 +1,10 @@
 import logging
-from bot import run_bot
+import subprocess
+command='python bot.py'
 logging.basicConfig(filename='log.txt', level=logging.INFO)
 while True:
 	try:
-		run_bot()
+		subprocess.run(['python','bot.py'])
 	except Exception as ex:
 		logging.error(ex)
 		continue
