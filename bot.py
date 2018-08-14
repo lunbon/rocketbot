@@ -85,8 +85,11 @@ async def reg(ctx,platform:str, nick:str):
 	else:
 		await bot.say('Saving Error')
 	
-
-
+@bot.command(pass_context=True)
+async def show_list():
+	channel=bot.get_channel(log_chan)
+	with open(fileName, 'br') as f:
+		await bot.send_file(channel, f)
 
 async def check_ranks():
 	await bot.wait_until_ready()
